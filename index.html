@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>落地价 · 非洲落地成本计算器</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23111814'/%3E%3Ctext x='16' y='23' font-size='17' text-anchor='middle' fill='%23F5F1E8' font-family='sans-serif'%3EL%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="brand" href="#calc">
+          <span class="mark">落</span>
+          <span class="word">落地价<em>LANDED COST</em></span>
+        </a>
+        <nav class="links">
+          <a class="active" href="#calc">计算器</a>
+          <a href="#how">怎么算</a>
+          <a href="#sources">数据来源</a>
+        </nav>
+        <div
+          class="market-switch"
+          id="marketSwitch"
+          role="group"
+          aria-label="选择市场"
+        >
+          <button
+            type="button"
+            class="market-pill"
+            id="marketPill"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span class="flag" id="mFlag">🇳🇬</span>
+            <span id="mName">尼日利亚 · Jumia</span>
+            <span class="caret" aria-hidden="true">▾</span>
+          </button>
+          <div
+            class="market-menu"
+            id="marketMenu"
+            role="listbox"
+            aria-label="市场列表"
+            hidden
+          ></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="calc">
+        <p class="eyebrow">
+          <span class="dot"></span>
+          <span id="eyebrowText">NIGERIA · JUMIA FBJ · 2026</span>
+        </p>
+        <h1>先算清落地价，<br class="br" />再谈非洲梦。</h1>
+        <p class="lede">
+          关税、增值税、认证、清关、佣金、退货——每一笔都摊开给你看。算完还想干，再干。
+        </p>
+        <div class="stats">
+          <div><b id="statVat">7.5%</b><span>进口增值税</span></div>
+          <div><b id="statComm">5–20%</b><span>平台佣金</span></div>
+          <div><b id="statCycle">140+ 天</b><span>资金周转</span></div>
+        </div>
+      </section>
+
+      <section class="app">
+        <!-- 步骤表单 -->
+        <form class="steps" id="form" autocomplete="off">
+          <section class="step">
+            <header class="step-head">
+              <span class="num">01</span>
+              <div>
+                <h2>产品与货值</h2>
+                <p>你卖什么，进多少</p>
+              </div>
+            </header>
+            <div class="grid2">
+              <label class="field"
+                ><span>采购单价 <em>¥ / 件</em></span
+                ><input id="f_unitCost" type="number" step="0.1" min="0"
+              /></label>
+              <label class="field"
+                ><span>采购数量 <em>件</em></span
+                ><input id="f_qty" type="number" step="1" min="1"
+              /></label>
+              <label class="field"
+                ><span>单件重量 <em>kg</em></span
+                ><input id="f_unitWeight" type="number" step="0.01" min="0"
+              /></label>
+              <label class="field"
+                ><span>单件体积 <em>CBM</em></span
+                ><input id="f_unitVolume" type="number" step="0.001" min="0"
+              /></label>
+            </div>
+          </section>
+
+          <section class="step">
+            <header class="step-head">
+              <span class="num">02</span>
+              <div>
+                <h2>物流与品类</h2>
+                <p>怎么运、按什么税率</p>
+              </div>
+            </header>
+            <div class="grid2">
+              <label class="field"
+                ><span>头程方式</span
+                ><select id="f_freightMode"></select
+              ></label>
+              <label class="field"
+                ><span>品类（决定进口关税）</span
+                ><select id="f_dutyCat"></select
+              ></label>
+            </div>
+          </section>
+
+          <section class="step">
+            <header class="step-head">
+              <span class="num">03</span>
+              <div>
+                <h2>渠道与利润</h2>
+                <p>平台抽多少，你想赚多少</p>
+              </div>
+            </header>
+            <label class="field"
+              ><span>类目（决定平台佣金）</span
+              ><select id="f_commCat"></select
+            ></label>
+            <div class="grid2">
+              <label class="field"
+                ><span>目标净利率 <em>%</em></span
+                ><input id="f_margin" type="number" step="1" min="0" max="90"
+              /></label>
+              <label class="field"
+                ><span>退货率 <em>%</em></span
+                ><input id="f_return" type="number" step="1" min="0" max="60"
+              /></label>
+              <label class="field"
+                ><span>广告占比 <em>%</em></span
+                ><input id="f_ad" type="number" step="1" min="0" max="50"
+              /></label>
+              <label class="field"
+                ><span>目标售价 <em id="priceUnit">₦ · 留空自动</em></span
+                ><input
+                  id="f_price"
+                  type="number"
+                  step="1"
+                  min="0"
+                  placeholder="自动"
+              /></label>
+            </div>
+          </section>
+
+          <details class="more">
+            <summary><span>高级参数</span><em>汇率 / 认证 / 杂费</em></summary>
+            <div class="grid2">
+              <label class="field"
+                ><span>汇率 <em id="fxUnit">NGN / USD</em></span
+                ><input id="f_fx" type="number" step="10" min="1"
+              /></label>
+              <label class="field"
+                ><span>汇率 <em>CNY / USD</em></span
+                ><input id="f_cny" type="number" step="0.05" min="1"
+              /></label>
+              <label class="field"
+                ><span>认证费 <em>$ / 批</em></span
+                ><input id="f_cert" type="number" step="10" min="0"
+              /></label>
+              <label class="field"
+                ><span>清关费 <em>$ / 批</em></span
+                ><input id="f_clearance" type="number" step="10" min="0"
+              /></label>
+              <label class="field"
+                ><span>国内杂费 <em>¥ / 批</em></span
+                ><input id="f_domestic" type="number" step="50" min="0"
+              /></label>
+            </div>
+            <button type="button" class="btn-reset" id="btnReset">
+              恢复默认参数
+            </button>
+          </details>
+        </form>
+
+        <!-- 结果小票 -->
+        <aside class="receipt" id="receipt" aria-live="polite">
+          <div class="receipt-tape" aria-hidden="true"></div>
+          <div class="receipt-head">
+            <span class="rlabel">单件落地成本</span>
+            <div class="rbig" id="heroLanded">—</div>
+            <div class="rsub" id="heroSub">—</div>
+          </div>
+          <div class="receipt-rows">
+            <div class="rrow"><span>建议售价</span><b id="rPrice">—</b></div>
+            <div class="rrow">
+              <span>单件净利 / 净利率</span><b id="rProfit">—</b>
+            </div>
+            <div class="rrow"><span>回本率</span><b id="rBe">—</b></div>
+            <div class="rrow"><span>整批总成本</span><b id="rBatch">—</b></div>
+            <div class="rrow"><span>资金周转</span><b id="rCycle">—</b></div>
+          </div>
+          <div class="receipt-note">
+            估算值，非报价 · 所有参数可改，结果实时重算
+          </div>
+        </aside>
+      </section>
+
+      <section class="panels" id="how">
+        <article class="card span-2">
+          <header class="card-head">
+            <h3>成本结构</h3>
+            <p>每一件落地价里都有什么</p>
+          </header>
+          <div class="stackbar" id="stackbar"></div>
+          <div class="legend" id="legend"></div>
+        </article>
+
+        <article class="card span-2">
+          <div class="split">
+            <div>
+              <header class="card-head">
+                <h3>钱去哪了</h3>
+                <p>整批金额与占比</p>
+              </header>
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>项目</th>
+                    <th class="num">金额 ₦</th>
+                    <th class="num">占比</th>
+                  </tr>
+                </thead>
+                <tbody id="costTable"></tbody>
+              </table>
+            </div>
+            <div>
+              <header class="card-head">
+                <h3>敏感性</h3>
+                <p>汇率 × 退货率 → 单件净利 ₦</p>
+              </header>
+              <div class="sens"><table id="sensTable"></table></div>
+              <p class="note" id="sensNote"></p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card span-2">
+          <header class="card-head">
+            <h3>风险提示</h3>
+            <p>按当前参数自动判定</p>
+          </header>
+          <div class="risks" id="risks"></div>
+        </article>
+
+        <article class="card span-2" id="sources">
+          <header class="card-head">
+            <h3>数据来源与假设</h3>
+            <p>都能点开核对</p>
+          </header>
+          <ul class="sources" id="sourcesList"></ul>
+        </article>
+      </section>
+    </main>
+
+    <footer class="foot" id="foot"></footer>
+
+    <script src="src/data.js"></script>
+    <script src="src/calc.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
