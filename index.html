@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
@@ -318,7 +318,105 @@
           <ul class="sources" id="sourcesList"></ul>
         </article>
       </section>
+
+      <section class="faq" id="faq">
+        <header class="faq-head">
+          <h2>非洲落地成本 · 常见问题</h2>
+          <p>尼日利亚 / 肯尼亚 / 南非三国税费与平台费用的常见疑问</p>
+        </header>
+        <div class="faq-grid">
+          <details open>
+            <summary>非洲落地成本到底包括哪些费用？</summary>
+            <p>
+              采购成本、头程运费、保险、进口关税、附加税费、进口增值税、强制认证、清关杂费、国内杂费，
+              再加上平台佣金、支付手续费、广告费、退货成本与资金占用。很多报价只算了前三项，所以看起来"很赚"。
+            </p>
+          </details>
+          <details>
+            <summary>尼日利亚进口关税和增值税怎么算？</summary>
+            <p>
+              关税按 HS 编码对应税率乘 CIF；再叠关税 7% 的附加费、FOB 1% 的
+              CISS、CIF 0.5% 的 ETLS； 进口增值税 7.5% 对「CIF + 关税 + 附加费 +
+              CISS + ETLS」计征。Jumia 佣金 5–18%，另加支付手续费与广告。
+            </p>
+          </details>
+          <details>
+            <summary>肯尼亚的 IDF 和 RDL 是什么？</summary>
+            <p>
+              IDF（Import Declaration Fee）是进口申报费，按 CIF 的
+              3.5%；RDL（Railway Development Levy）是铁路发展税，按 CIF 的 2%。
+              两者都会进入 VAT 的计税基数，再按 16%
+              征增值税。所以肯尼亚不能只算一个 VAT。
+            </p>
+          </details>
+          <details>
+            <summary>南非的关税和 VAT 怎么算？</summary>
+            <p>
+              关税按品类，服装鞋帽最高可到 45%，消费电子约 15%；VAT 15% 对「CIF
+              + 关税」计征。 南非没有尼日利亚的 CISS/ETLS，也没有肯尼亚的
+              IDF/RDL，但客单价和平台费用要求更高。
+            </p>
+          </details>
+          <details>
+            <summary>为什么资金周转要 140 天左右？</summary>
+            <p>
+              生产约 15 天 + 海运约 38 天 + 清关约 10 天 + 销售周转约 60 天 +
+              平台回款 14–21 天， 合计 137–144
+              天。这部分资金占用不体现在"单件毛利"里，但决定你能做多大规模。
+            </p>
+          </details>
+          <details>
+            <summary>这个工具免费吗？数据可信吗？</summary>
+            <p>
+              免费，无需注册。税率为 2026 年参考值，每页都标注了官方来源（NCS /
+              KRA / SARS、平台费用页），
+              汇率、运费、认证费均可在左侧直接改。最终以清关日官方税则与合同为准，本工具不构成报价或法律/税务意见。
+            </p>
+          </details>
+        </div>
+      </section>
     </main>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "非洲落地成本到底包括哪些费用？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "采购成本、头程运费、保险、进口关税、附加税费、进口增值税、强制认证、清关杂费、国内杂费，再加平台佣金、支付手续费、广告费、退货成本与资金占用。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "尼日利亚进口关税和增值税怎么算？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "关税按 HS 编码乘 CIF；再叠关税 7% 附加费、FOB 1% CISS、CIF 0.5% ETLS；进口增值税 7.5% 对 CIF 加税费计征。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "肯尼亚的 IDF 和 RDL 是什么？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "IDF 是进口申报费，按 CIF 3.5%；RDL 是铁路发展税，按 CIF 2%；两者进入 VAT 基数后按 16% 征增值税。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "南非的关税和 VAT 怎么算？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "关税按品类，服装鞋帽最高 45%，消费电子约 15%；VAT 15% 对 CIF 加关税计征。"
+            }
+          }
+        ]
+      }
+    </script>
 
     <footer class="foot" id="foot"></footer>
 
