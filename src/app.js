@@ -478,6 +478,7 @@
     try {
       history.replaceState(null, "", "?market=" + code);
     } catch (e) {}
+    if (window.Track) window.Track.event("switch-market", code);
   }
 
   function openMenu() {
@@ -532,6 +533,7 @@
     };
     btn.dataset.html = btn.innerHTML;
     btn.dataset.label = "已复制";
+    if (window.Track) window.Track.event("share", marketCode);
     if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
       navigator
         .share({
@@ -611,6 +613,7 @@
       render();
     });
     $("btnShare").addEventListener("click", doShare);
+    if (window.Track) window.Track.event("visit", marketCode);
   }
 
   if (document.readyState === "loading")

@@ -315,6 +315,11 @@
 
     <script src="src/data.js"></script>
     <script src="src/calc.js"></script>
+    <script src="src/track.js"></script>
+    <script>
+      // 匿名统计：留空则完全不发送任何请求。填入 GoatCounter 站点即可启用。
+      window.Track.init({ endpoint: "" });
+    </script>
     <script src="src/app.js"></script>
   </body>
 </html>
