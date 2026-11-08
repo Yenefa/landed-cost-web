@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 多市场计算内核测试（与 Android 版 CalcTest 对齐）
  */
 const DATA = require("../src/data.js");
@@ -136,6 +136,85 @@ function run(code, overrides) {
   ok("NG 电子触发 SONCAP", run("NG").certSchemes.includes("SONCAP"));
   ok("KE 电子触发 KEBS", run("KE").certSchemes.includes("KEBS PVoC"));
   ok("ZA 电子触发 NRCS", run("ZA").certSchemes.includes("NRCS LOA"));
+}
+
+// 8. 三国对比：一次算出三个市场，且各自用自己的汇率/认证/清关
+{
+  const freight = DATA.freight[DATA.defaults.freightMode];
+  const ctxs = DATA.marketOrder.map((code) => ({
+    country: DATA.getMarket(code),
+    channel: DATA.getChannel(code),
+    freight,
+    leadTime: DATA.defaults.leadTime,
+  }));
+  // 故意传入「尼日利亚」的汇率和清关费，验证对比时会按各市场默认值覆盖
+  const input = Object.assign({}, DATA.defaults, {
+    fxNGNperUSD: 1500,
+    clearanceUSD: DATA.getMarket("NG").clearances.perShipmentUSD.value,
+  });
+  const rows = Calc.compareMarkets(input, ctxs);
+
+  ok("对比返回 3 个市场", rows.length === 3);
+  ok("对比市场顺序 NG/KE/ZA", rows.map((r) => r.code).join(",") === "NG,KE,ZA");
+  ok(
+    "对比币种各自正确",
+    rows[0].currencySymbol === "₦" &&
+      rows[1].currencySymbol === "KSh" &&
+      rows[2].currencySymbol === "R",
+  );
+
+  // 关键：对比结果必须等于「单独按该市场默认参数计算」的结果
+  ["NG", "KE", "ZA"].forEach((code, i) => {
+    const single = run(code);
+    ok(
+      `对比 ${code} 落地价 = 单市场计算`,
+      near(rows[i].landedUnit, single.landed.unitNGN, 1e-6),
+      rows[i].landedUnit + " vs " + single.landed.unitNGN,
+    );
+    ok(
+      `对比 ${code} 净利率 = 单市场计算`,
+      near(rows[i].netMargin, single.unit.netMargin, 1e-9),
+    );
+    ok(
+      `对比 ${code} 周转 = 单市场计算`,
+      rows[i].cycleDays === single.cash.cycleDays,
+    );
+  });
+
+  // 三国落地价不应完全相同（税制不同）
+  ok(
+    "三国落地价互不相同",
+    new Set(rows.map((r) => Math.round(r.landedUnit))).size === 3,
+  );
+  // 关税/VAT 来自各自市场
+  ok(
+    "对比税率来自各自市场",
+    rows[0].dutyRate !== rows[1].dutyRate ||
+      rows[1].dutyRate !== rows[2].dutyRate,
+  );
+
+  // 9. 当前市场用「手改值」，其他市场用默认值
+  {
+    const customFx = 1800;
+    const withCustom = Object.assign({}, input, { fxNGNperUSD: customFx });
+    const r2 = Calc.compareMarkets(withCustom, ctxs, "NG");
+    const ngCustom = run("NG", { fxNGNperUSD: customFx });
+    ok(
+      "当前市场 NG 用改后汇率",
+      near(r2[0].landedUnit, ngCustom.landed.unitNGN, 1e-6),
+      r2[0].landedUnit + " vs " + ngCustom.landed.unitNGN,
+    );
+    ok("当前市场 NG 被标记 isCurrent", r2[0].isCurrent === true);
+    ok("非当前市场 KE 不被污染", r2[1].isCurrent === false);
+    ok(
+      "非当前市场 KE 仍用默认汇率",
+      near(r2[1].landedUnit, run("KE").landed.unitNGN, 1e-6),
+    );
+    ok(
+      "改当前市场汇率后 NG 落地价变化",
+      r2[0].landedUnit !== rows[0].landedUnit,
+    );
+  }
 }
 
 console.log(

@@ -306,6 +306,7 @@
       "。本币贬值时你的美元成本折成本币更贵，售价却未必能同步涨。";
 
     renderRisks(res, input);
+    renderCompare(input);
 
     var srcEl = $("sourcesList");
     srcEl.innerHTML = "";
@@ -334,6 +335,124 @@
       D.meta.version +
       " · 数据更新 " +
       D.meta.updated;
+  }
+
+  /**
+   * 三国对比：同一批货分别落在 NG / KE / ZA 的结果。
+   * 每个市场用各自的汇率、认证费、清关费默认值（Calc.compareMarkets 内部剥离市场相关字段）。
+   */
+  function renderCompare(input) {
+    var grid = $("cmpGrid");
+    if (!grid) return;
+    var freight = D.freight[input.freightMode] || D.freight.sea_lcl;
+    var ctxs = D.marketOrder.map(function (code) {
+      return {
+        country: D.getMarket(code),
+        channel: D.getChannel(code),
+        freight: freight,
+        leadTime: D.defaults.leadTime,
+      };
+    });
+
+    var rows = Calc.compareMarkets(input, ctxs, country.code);
+
+    var best = rows[0];
+    var shortest = rows[0];
+    var cheapest = rows[0];
+    rows.forEach(function (r) {
+      if (r.netMargin > best.netMargin) best = r;
+      if (r.cycleDays < shortest.cycleDays) shortest = r;
+      if (r.landedUnitCNY < cheapest.landedUnitCNY) cheapest = r;
+    });
+
+    function col(r) {
+      var isBest = r.code === best.code;
+      var cls = "cmp-col" + (isBest ? " is-best" : "");
+      return (
+        '<div class="' +
+        cls +
+        '">' +
+        '<div class="cmp-head">' +
+        '<span class="cmp-flag" aria-hidden="true">' +
+        esc(r.flag) +
+        "</span>" +
+        "<strong>" +
+        esc(r.name) +
+        "</strong>" +
+        '<span class="cmp-plat">' +
+        esc(r.platform) +
+        "</span>" +
+        "</div>" +
+        '<div class="cmp-hero"><small>' +
+        esc(r.currencySymbol) +
+        "</small>" +
+        fmt(r.landedUnit) +
+        "</div>" +
+        '<div class="cmp-sub">≈ ¥' +
+        fmt(r.landedUnitCNY, 2) +
+        " · 关税 " +
+        pct(r.dutyRate, 0) +
+        " · VAT " +
+        pct(r.vatRate, 1) +
+        "</div>" +
+        '<dl class="cmp-list">' +
+        "<div><dt>建议售价</dt><dd>" +
+        esc(r.currencySymbol) +
+        fmt(r.price) +
+        "</dd></div>" +
+        "<div><dt>单件净利</dt><dd>" +
+        esc(r.currencySymbol) +
+        fmt(r.netProfit) +
+        "</dd></div>" +
+        "<div><dt>净利率</dt><dd>" +
+        pct(r.netMargin, 1) +
+        "</dd></div>" +
+        "<div><dt>资金周转</dt><dd>" +
+        fmt(r.cycleDays) +
+        " 天</dd></div>" +
+        "<div><dt>回本率</dt><dd>" +
+        pct(r.recoverRatio, 0) +
+        "</dd></div>" +
+        "</dl>" +
+        (isBest ? '<div class="cmp-badge">净利率最高</div>' : "") +
+        "</div>"
+      );
+    }
+
+    var html = "";
+    rows.forEach(function (r) {
+      html += col(r);
+    });
+    grid.innerHTML = html;
+
+    var noteEl = $("cmpNote");
+    if (noteEl) {
+      var parts = [];
+      parts.push(
+        "净利率最高的是" + best.name + "（" + pct(best.netMargin, 1) + "）",
+      );
+      if (shortest.code !== best.code) {
+        parts.push(
+          "资金周转最快的是" +
+            shortest.name +
+            "（" +
+            fmt(shortest.cycleDays) +
+            " 天）",
+        );
+      }
+      if (cheapest.code !== best.code && cheapest.code !== shortest.code) {
+        parts.push(
+          "单件落地最低的是" +
+            cheapest.name +
+            "（≈ ¥" +
+            fmt(cheapest.landedUnitCNY, 2) +
+            "）",
+        );
+      }
+      noteEl.textContent =
+        parts.join("；") +
+        "。同一批货换成别的市场，税率、费率、汇率都会变，改左侧参数实时重算。";
+    }
   }
 
   function renderRisks(res, input) {

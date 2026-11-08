@@ -331,10 +331,56 @@
     };
   }
 
+  /**
+   * 三国对比：同一批货 / 同一套输入，分别落在不同市场的结果。
+   *
+   * 语义：
+   *  - 当前正在编辑的市场（currentCode）用**用户改过的**汇率/认证/清关；
+   *  - 其他市场用各自默认值（否则拿尼日利亚的汇率去算肯尼亚会算错）。
+   */
+  function compareMarkets(input, ctxs, currentCode) {
+    var base = {};
+    for (var k in input) {
+      if (!Object.prototype.hasOwnProperty.call(input, k)) continue;
+      if (
+        k === "fxNGNperUSD" ||
+        k === "fxCNYperUSD" ||
+        k === "certUSDOverride" ||
+        k === "clearanceUSD"
+      )
+        continue;
+      base[k] = input[k];
+    }
+    return ctxs.map(function (ctx) {
+      var useInput =
+        currentCode && ctx.country.code === currentCode ? input : base;
+      var r = compute(useInput, ctx);
+      return {
+        code: ctx.country.code,
+        name: ctx.country.name,
+        nameEn: ctx.country.nameEn,
+        flag: ctx.country.flag,
+        platform: ctx.country.platform,
+        currencySymbol: r.meta.currencySymbol,
+        dutyRate: r.inputs.dutyRate,
+        vatRate: r.meta.vatRate,
+        landedUnit: r.landed.unitNGN,
+        landedUnitCNY: r.landed.unitCNY,
+        price: r.pricing.priceNGN,
+        netProfit: r.unit.netProfitNGN,
+        netMargin: r.unit.netMargin,
+        cycleDays: r.cash.cycleDays,
+        recoverRatio: r.batch.recoverRatio,
+        isCurrent: !!currentCode && ctx.country.code === currentCode,
+      };
+    });
+  }
+
   var api = {
     compute: compute,
     computeImport: computeImport,
     certCost: certCost,
+    compareMarkets: compareMarkets,
     clamp: clamp,
     r2: r2,
   };

@@ -57,7 +57,7 @@
 
   var DATA = {
     meta: {
-      version: "0.3.0",
+      version: "0.4.0",
       updated: "2026-11",
       disclaimer:
         "本工具为估算器，不构成报价或法律/税务意见。税率、费率、汇率以官方与合同为准。",
