@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://yenefa.github.io/landed-cost-web/sitemap.xml
