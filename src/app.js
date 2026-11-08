@@ -153,6 +153,7 @@
     $("statCycle").textContent = cycle + "+ 天";
     $("fxUnit").textContent = country.fx.local.label;
     $("priceUnit").textContent = country.currencySymbol + " · 留空自动";
+    $("tblCur").textContent = country.currencySymbol;
     document.title = "落地价 · " + country.name + "落地成本计算器";
   }
 
@@ -488,6 +489,75 @@
     $("marketPill").setAttribute("aria-expanded", "false");
   }
 
+  function shareText(res) {
+    return [
+      "落地价 · " + country.name + " · " + country.platform,
+      "单件落地 " +
+        money(res.landed.unitNGN) +
+        "（≈¥" +
+        fmt(res.landed.unitCNY, 2) +
+        "）",
+      "建议售价 " +
+        money(res.pricing.priceNGN) +
+        " · 净利率 " +
+        pct(res.unit.netMargin, 1),
+      "关税 " +
+        pct(res.inputs.dutyRate, 0) +
+        " · 增值税 " +
+        pct(res.meta.vatRate, 0) +
+        " · 回本率 " +
+        pct(res.batch.recoverRatio, 0),
+      "资金周转 " + res.cash.cycleDays + " 天",
+      "",
+      "自己算一遍：" + location.href,
+    ].join("\n");
+  }
+
+  function doShare() {
+    var input = readInput();
+    var freight = D.freight[input.freightMode] || D.freight.sea_lcl;
+    var res = Calc.compute(input, {
+      country: country,
+      channel: channel,
+      freight: freight,
+      leadTime: D.defaults.leadTime,
+    });
+    var text = shareText(res);
+    var btn = $("btnShare");
+    var restore = function () {
+      btn.textContent = btn.dataset.label;
+      setTimeout(function () {
+        btn.innerHTML = btn.dataset.html;
+      }, 1600);
+    };
+    btn.dataset.html = btn.innerHTML;
+    btn.dataset.label = "已复制";
+    if (navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+      navigator
+        .share({
+          title: "落地价 · " + country.name,
+          text: text,
+          url: location.href,
+        })
+        .catch(function () {});
+      return;
+    }
+    var done = function () {
+      btn.textContent = "✓ 已复制结果";
+      restore();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(text)
+        .then(done)
+        .catch(function () {
+          window.prompt("复制这段结果：", text);
+        });
+    } else {
+      window.prompt("复制这段结果：", text);
+    }
+  }
+
   function boot() {
     var q = /[?&]market=(NG|KE|ZA)/.exec(location.search);
     if (q) marketCode = q[1];
@@ -540,6 +610,7 @@
       setDefaults();
       render();
     });
+    $("btnShare").addEventListener("click", doShare);
   }
 
   if (document.readyState === "loading")

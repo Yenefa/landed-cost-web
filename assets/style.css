@@ -1012,3 +1012,29 @@ input::placeholder {
     font-size: 34px;
   }
 }
+
+.share-btn {
+  width: 100%;
+  margin-top: 12px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--amber);
+  color: #1a1200;
+  border: 0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.share-btn:hover {
+  filter: brightness(1.06);
+}
+.share-btn:focus-visible {
+  outline: 2px solid var(--amber-2);
+  outline-offset: 2px;
+}
